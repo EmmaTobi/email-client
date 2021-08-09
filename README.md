@@ -17,6 +17,8 @@ Run `docker compose up`
 
 Navigate to your browser on `http://localhost:3000`
 
+** Incase you experience network errors often, try to disable cors in your browser
+
 ** Note - Things i didnt do because of time
 
 Improve frontend ui

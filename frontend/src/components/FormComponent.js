@@ -65,7 +65,6 @@ export default class FormComponent extends Component{
   }
 
   render(){
-      console.log("PORT", process.env.PORT)
       return (
         <form action='#' method="POST" onSubmit={this.handleSubmit} >
           <fieldset className="fieldSet" >
