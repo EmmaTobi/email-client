@@ -1,0 +1,39 @@
+  .fieldSet {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 2rem;
+    justify-content: center;
+  }
+
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .select {
+      padding: 0.3rem;
+      border-radius: 1px;
+      border: 1px solid #333;
+  }
+
+  .input {
+      padding: 0.3rem;
+      border-radius: 1px;
+      border: 1px solid #333;
+  }
+
+  .button {
+      padding: 0.3rem;
+      border-radius: 1px;
+      border: 1px solid #999;
+      transition: all 0.3s;
+      grid-column: 1 / span 2;
+      width: 70%;
+      margin-left: 15%;
+      margin-top: 1rem;
+  }
+
+  .button:hover{
+    background: #333;
+    color: #fff;
+  }
