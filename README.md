@@ -15,4 +15,10 @@ Navigate to the repository folder where you would find docker-compose.yaml file 
 
 Run `docker compose up`
 
-Navigate to your browser on http::/localhost:3000
+Navigate to your browser on `http://localhost:3000`
+
+** Note - Things i didnt do because of time
+
+Improve frontend ui
+
+Full Test Coverage
