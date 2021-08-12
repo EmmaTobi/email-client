@@ -66,11 +66,11 @@ export default class FormComponent extends Component{
 
   render(){
       return (
-        <form action='#' method="POST" onSubmit={this.handleSubmit} >
+        <form action='#' method="POST"  >
           <fieldset className="fieldSet" >
           <div className="formGroup">
             <label htmlFor='server-type'>Server type</label>
-            <select className="select" disabled={this.state.connected}  name='serverType' onChange={this.handleChange} required="true" id='serverType'>
+            <select className="select" disabled={this.state.connected}  name='serverType' onChange={this.handleChange} required id='serverType'>
               <option value=''>Select Server Type</option>
               <option value='imap'>Imap</option>
               <option value='pop3'>Pop3</option>
@@ -103,7 +103,7 @@ export default class FormComponent extends Component{
             <input className="input"  disabled={this.state.connected} type='password' required onChange={this.handleChange} name='password' />
           </div>
 
-          <button className="button" type='submit' disabled={false}>{ !this.state.connected ? "Connect" : "Disconnect"}
+          <button className="button" onClick={this.handleSubmit} type='submit' disabled={false}>{ !this.state.connected ? "Connect" : "Disconnect"}
                 &nbsp; <Spinner style={{display : this.state.loading ? 'inline-block' : 'none'}} animation="border" as="span" variant="secondary" />
           </button>
           </fieldset>

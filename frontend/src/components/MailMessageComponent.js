@@ -27,7 +27,7 @@ export default class MailMessageComponent extends Component{
 
   render(){
     return (
-        <div className="htmlTextarea" dangerouslySetInnerHTML={ {__html: this.state.message} } > 
+        <div style={{ height : "1000px", width: "800px", overflow: "hidden"}} className="htmlTextarea" dangerouslySetInnerHTML={ {__html: this.state.message} } > 
         </div>
     );
   }

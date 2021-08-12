@@ -7,11 +7,11 @@ import "../css/Pagination.css";
 function PaginationComponent({ data, totalMsgCount, connectionInfo,  pageLimit, dataLimit }) {
 
   const possibleNumberOfPages = Math.round(totalMsgCount / pageLimit)
-  const displayPaginationState = possibleNumberOfPages <= pageLimit;
+  const displayPaginationState = possibleNumberOfPages < pageLimit;
   const [pages] = useState(possibleNumberOfPages);
   const [currentPage, setCurrentPage] = useState(1);
 
-  pageLimit = !displayPaginationState ? possibleNumberOfPages : pageLimit
+  pageLimit = displayPaginationState ? possibleNumberOfPages : pageLimit
 
   function goToNextPage() {
       setCurrentPage((page) => handlePageChange(page, 1));
@@ -54,18 +54,18 @@ function PaginationComponent({ data, totalMsgCount, connectionInfo,  pageLimit, 
 
     {/* show the posts, 10 posts at a time */}
     <div className="dataContainer">
-       { <Table  striped responsive borderded hover  variant="dark" >
+       { <Table  striped responsive borderded="true" hover  variant="dark" >
             <tbody>
               <tr>
                 <th>S/N</th>
                 <th>From</th>
-                <th>Subject</th>
+                <th style={{minWidth : "170"}}>Subject</th>
                 <th>Date</th>
               </tr>
               
               {
                 getPaginatedData().map((header, index) => 
-                    <tr className="stretched-link cursor" key={header.id} onClick={  () => handleHeaderClicked(header.id)}>
+                    <tr className="cursor" key={header.id} onClick={  () => handleHeaderClicked(header.id)}>
                         <td>{header.id}</td>
                         <td>{header.fromAddress}</td>
                         <td>{header.subject}</td>

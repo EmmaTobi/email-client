@@ -7,5 +7,3 @@ COPY ../frontend/ .
 EXPOSE 3000
 
 CMD npm install && npm start
- 
-# RUN chown -R laravel:laravel .

@@ -8,7 +8,8 @@ import './App.css';
 
 const App = () => {
   return (
-    <div className="container wrapper">
+
+    <div className="container wrapper" >
       <div className={"row"}>
         <EmailConnectionProvider>
           <FormComponent />

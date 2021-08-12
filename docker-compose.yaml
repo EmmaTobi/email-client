@@ -2,21 +2,21 @@ version: '3.8'
 
 services:
   server:
-    image: emmatblingx/email-server:latest
+    image: emmatblingx/email-client-server:latest
     ports:
       - '8000:80'
     depends_on:
       - php
   php:
-    image: emmatblingx/email-php:latest
+    image: emmatblingx/email-client-php:latest
   composer:
-    image: emmatblingx/email-composer:latest
+    image: emmatblingx/email-client-composer:latest
   artisan:
-    image: emmatblingx/email-php:latest
+    image: emmatblingx/email-client-php:latest
     entrypoint: ['php', '/var/www/html/artisan']
     stdin_open: true
     tty: true
   frontend:
-    image: emmatblingx/email-frontend:latest
+    image: emmatblingx/email-client-frontend:latest
     ports:
       - 3000:3000

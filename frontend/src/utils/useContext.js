@@ -13,6 +13,7 @@ export const EmailConnectionProvider = ({ children }) => {
                                                         password : ""
                                                         });
     const [connected, setConnected] = useState(false);
+    const [loading, setLoading] = useState(false);
 
 
   return (
@@ -21,7 +22,9 @@ export const EmailConnectionProvider = ({ children }) => {
         connectionInfo,
         setConnectionInfo,
         connected,
-        setConnected
+        setConnected,
+        loading,
+        setLoading
       }}
     >
       {children}

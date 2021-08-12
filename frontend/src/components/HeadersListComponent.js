@@ -17,7 +17,9 @@ export default class HeadersListComponent extends Component{
         connectionInfo: {},
         totalMsgCount : 0,
         start : 1,
-        end : 10
+        end : 5,
+        pageLimit : 5,
+        dataLimit : 5
       }
       this.getHeaders = this.getHeaders.bind(this);
       this.resolveEndBoundary = this.resolveEndBoundary.bind(this);
@@ -26,7 +28,7 @@ export default class HeadersListComponent extends Component{
   componentDidMount(){
         eventBus.on("connectionSuccessful", (data) => {
             this.setState({totalMsgCount: data.msgCount, connectionInfo : data.connectionInfo})
-            this.getHeaders(1, this.resolveEndBoundary(10))
+            this.getHeaders(this.state.start, this.resolveEndBoundary(this.state.end))
         })
         eventBus.on("pageChanged", (data) => {
             this.setState( {start : data.start, end : data.end})
@@ -66,8 +68,8 @@ export default class HeadersListComponent extends Component{
                 data={this.state.headers}
                 totalMsgCount={this.state.totalMsgCount}
                 connectionInfo={this.state.connectionInfo}
-                pageLimit={5}
-                dataLimit={5} />
+                pageLimit={this.state.pageLimit}
+                dataLimit={this.state.dataLimit} />
           </div>
         );
       }else{
