@@ -5,7 +5,6 @@ import { MyContext } from "../utils/useContext";
 import eventBus from "../utils/eventBus";
 import "../css/HeadersList.css";
 
-
 export default class HeadersListComponent extends Component{
 
   static contextType = MyContext
@@ -19,7 +18,8 @@ export default class HeadersListComponent extends Component{
         start : 1,
         end : 5,
         pageLimit : 5,
-        dataLimit : 5
+        dataLimit : 5,
+        loading : false
       }
       this.getHeaders = this.getHeaders.bind(this);
       this.resolveEndBoundary = this.resolveEndBoundary.bind(this);
@@ -34,6 +34,8 @@ export default class HeadersListComponent extends Component{
             this.setState( {start : data.start, end : data.end})
             this.getHeaders(data.start, this.resolveEndBoundary(data.end))
         })
+        eventBus.on("loading", (data) => {this.setState( {loading : data.loading})
+      })
   }
   /**
    * Determine  boundary when getting paginated headers
@@ -56,16 +58,17 @@ export default class HeadersListComponent extends Component{
             headers : response.data.data
           });
         })
-        .catch(err => {return alert("Network Error Please Try Again..");});
+        .catch(err => {return alert(err.response ? err.response.data.message : err);});
   }
 
   render(){
       let count = this.state.headers.length;
       if(count > 0){
         return (
-          <div className="wrapper">
+          <div>
               <PaginationComponent
                 data={this.state.headers}
+                loading={this.state.loading}
                 totalMsgCount={this.state.totalMsgCount}
                 connectionInfo={this.state.connectionInfo}
                 pageLimit={this.state.pageLimit}

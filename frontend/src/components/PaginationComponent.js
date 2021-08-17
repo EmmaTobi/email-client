@@ -4,7 +4,7 @@ import Table from 'react-bootstrap/Table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "../css/Pagination.css";
 
-function PaginationComponent({ data, totalMsgCount, connectionInfo,  pageLimit, dataLimit }) {
+function PaginationComponent({ data, loading,  totalMsgCount, connectionInfo,  pageLimit, dataLimit }) {
 
   const possibleNumberOfPages = Math.round(totalMsgCount / pageLimit)
   const displayPaginationState = possibleNumberOfPages < pageLimit;
@@ -45,15 +45,17 @@ function PaginationComponent({ data, totalMsgCount, connectionInfo,  pageLimit, 
   };
 
   const handleHeaderClicked = (headerId) => {
+    eventBus.dispatch("loading", { loading : true });
     eventBus.dispatch("getInbox", { msgId : headerId, connectionInfo });
   }
 
   return (
    
-   <div>
+   <div >
 
     {/* show the posts, 10 posts at a time */}
-    <div className="dataContainer">
+    <div className={"dataContainer"} >
+    
        { <Table  striped responsive borderded="true" hover  variant="dark" >
             <tbody>
               <tr>
@@ -65,7 +67,7 @@ function PaginationComponent({ data, totalMsgCount, connectionInfo,  pageLimit, 
               
               {
                 getPaginatedData().map((header, index) => 
-                    <tr className="cursor" key={header.id} onClick={  () => handleHeaderClicked(header.id)}>
+                    <tr className={!loading ? "cursor": "wait"} key={header.id} onClick={  () => handleHeaderClicked(header.id)}>
                         <td>{header.id}</td>
                         <td>{header.fromAddress}</td>
                         <td>{header.subject}</td>

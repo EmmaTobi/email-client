@@ -50,4 +50,8 @@
   .cursor{
     cursor: pointer;
   }
+
+  .wait{
+    cursor: wait;
+  }
   

@@ -18,9 +18,13 @@ export default class MailMessageComponent extends Component{
       eventBus.on("getInbox", (data) => {
            EmailClientService.retrieveInbox(data.connectionInfo, data.msgId)
                           .then(response => {
+                            eventBus.dispatch("loading", { loading : false });
                             this.setState({message : response.data.data})
                           })
-                          .catch(err => alert("Network Error, please try again") );
+                          .catch(err =>{
+                             eventBus.dispatch("loading", { loading : false });
+                             alert(err.response ? err.response.data.message : err) 
+                            });
          }
       );
     }

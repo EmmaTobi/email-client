@@ -10,6 +10,10 @@ use App\Http\Requests\EmailConnectionRequest;
 use App\Http\Requests\InboxRequest;
 use App\Http\Controllers\Controller;
 
+
+/**
+ * Controller handling email related requests
+ */
 class EmailClientController extends Controller
 {
 

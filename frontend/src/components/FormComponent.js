@@ -47,9 +47,9 @@ export default class FormComponent extends Component{
                           this.setState({connected: true, loading : false})
                           this.dispatchDataOnConnectionUpdate(response.data.data.msgCount)
                         })
-                        .catch(err =>{
+                        .catch((err) =>{
                           this.setState({loading : false})
-                          alert("Network Error, Kindly Retry again")
+                          alert(err.response ? err.response.data.message : err)
                         } )
     }else{
       this.resetState()
@@ -58,10 +58,7 @@ export default class FormComponent extends Component{
   }
 
   dispatchDataOnConnectionUpdate(msgCount){
-    eventBus.dispatch("connectionSuccessful", 
-                        { msgCount,
-                          connectionInfo : this.state.connectionData
-                        });
+    eventBus.dispatch("connectionSuccessful", { msgCount,connectionInfo : this.state.connectionData});
   }
 
   render(){

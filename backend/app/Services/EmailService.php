@@ -42,8 +42,7 @@ class EmailService implements EmailContract {
             return $this;
         }catch(ErrorException $e){
             \Log::info($e->getMessage());
-            // throw new EmailException("An Error Occured While Connecting to your mail server. Ensure your credentials are valid and complete");
-            throw new EmailException(imap_last_error());
+            throw new EmailException(implode(", ",imap_errors()));
         }
 
     }
@@ -117,7 +116,7 @@ class EmailService implements EmailContract {
 			$msg = array(
 				'index'     => $i,
 				'header'    => imap_headerinfo($this->client, $i),
-				'body'      => imap_fetchbody($this->client, $i, "0"),
+				'body'      => $this->getBody($i, $this->client),
 				'structure' => imap_fetchstructure($this->client, $i)
             );
             $in[$i] = $msg;
@@ -136,8 +135,7 @@ class EmailService implements EmailContract {
         $msgId = (int)$data["msgId"];
         $count = $this->getMsgCount();
         if( $count &&  ($msgId <= $count )){
-            $bodyRaw  =  imap_fetchbody($this->client, $msgId , "0");
-            return $this->parseHtml(quoted_printable_decode($bodyRaw));
+            return $this->getBody($msgId, $this->client);
         }
         return false;
     }
@@ -166,65 +164,85 @@ class EmailService implements EmailContract {
     {
 		$this->inbox = array();
         $this->msgCount = 0;
+        imap_errors();
         if($this->client)imap_close($this->client);
         \Log::info("Connection Closed Successfully\n");
     }
 
-    /** 
-    * Parse Html Tags from mail
-    * @param string $bodyEmailMessage
-    * @return string
-    */
-    private function parseHtml(string $bodyEmailMessage) :  string
-    {
-        $html = $this->parseHtmlFormatZero($bodyEmailMessage);
-        if(!$html){
-            $html =  $this->parseHtmlFormatOne($bodyEmailMessage);
+    /**
+     * Get Email Body
+     * @param $uid int the email id
+     * @param $imap client the client connection object
+     * return string
+     */
+    protected function getBody($uid, $imap) : string {
+        $body = $this->get_part($imap, $uid, "TEXT/HTML");
+        // if HTML body is empty, try getting text body
+        if ($body == "") {
+            $body = $this->get_part($imap, $uid, "TEXT/PLAIN");
         }
-        return $html ?: $bodyEmailMessage;
-    }
-
-    private function parseHtmlFormatZero(string $bodyEmailMessage) :  string
-    {
-        $result = $this->getStringpart($bodyEmailMessage, "<!DOCTYPE", "</html>");
-        if(!$result){
-            $result = $this->getStringpart( $bodyEmailMessage, "<body", null );
-        }
-        return $result ?: $bodyEmailMessage;
-    }
-
-    private function parseHtmlFormatOne(string $bodyEmailMessage) :  string
-    {
-        $result  = $this->getStringpart($bodyEmailMessage, "Content-Type:", "Content-Type:");
-        if(!$result){
-            $result = $bodyEmailMessage;
-        }
-        return $result;
-    }
+        return $body;
+    }  
     
-    /** 
-    * Get a part from string
-    * @param string $string the string to get part from
-    * @param string $startStr the start delimeter
-    * @param string $endStr the end delimiter
-    * @return string
-    */
-    private function getStringpart(string $string, string $startStr, string $endStr = null) 
-    {
-        $startpos=strpos($string, $startStr);
-        if(!$startpos){
-            return false;
-        }else{
-            if($endStr){
-                $endpos=strpos($string,$endStr,$startpos + 1) + strlen($endStr);
-                $endpos=$endpos-$startpos;
-            }else{
-                $endpos = strlen($string);
-            }
-            return substr($string,$startpos,$endpos);
+    /**
+     * Get Email Body
+     * @param $uid int the email id
+     * @param $imap client the client connection object
+     * @param $mimetype string the required email mime type
+     * @param $structure boolean the email structure
+     * @param $partNumber boolean the email part number
+     * return string
+     */
+    private function get_part($imap, $uid, $mimetype, $structure = false, $partNumber = false) {
+        if (!$structure) {
+           $structure = imap_fetchstructure($imap, $uid, FT_UID);
         }
+        if ($structure) {
+            if ($mimetype == $this->get_mime_type($structure)) {
+                if (!$partNumber) {
+                    $partNumber = 0;
+                }
+                $text = imap_fetchbody($imap, $uid, $partNumber, FT_UID);
+                
+                switch ($structure->encoding) {
+                    case 3: return imap_base64($text);
+                    case 4: return imap_qprint($text);
+                    default: return $text;
+                }
+            }
+            // multipart
+            if ($structure->type == 1) {
+                foreach ($structure->parts as $index => $subStruct) {
+                    $prefix = "";
+                    if ($partNumber) {
+                        $prefix = $partNumber . ".";
+                    }
+                    $data = $this->get_part($imap, $uid, $mimetype, $subStruct,
+                        $prefix. ($index + 1));
+                    if ($data) {
+                        return $data;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
+    /**
+     * Get Email Mime type
+     * @param $structure boolean the email structure
+     * return string
+     */
+    private function get_mime_type($structure) : string {
+        $primaryMimetype = array("TEXT", "MULTIPART", "MESSAGE", "APPLICATION",
+            "AUDIO", "IMAGE", "VIDEO", "OTHER");
+    
+        if ($structure->subtype) {
+           return $primaryMimetype[(int)$structure->type] . "/" . $structure->subtype;
+        }
+        return "TEXT/PLAIN";
+    }  
+    
     /** 
     * Get a part from string
     * @param array $extractDataFromHeader an header to extract data [date, subject, fromaddress]from
